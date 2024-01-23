@@ -32,6 +32,12 @@ $ pnpm build
 $ bun run build
 ```
 
+- Also, make sure you have an API_KEY from open weather map api. Then you have to create a .env file and paste the api key as value there with this key:
+
+```s
+VITE_OWA_API_KEY=""
+```
+
 - Then go to `chrome://extensions` in the browser
 - Turn on developer mode (if not already on)
 - Then click on "Load Unpacked" and select the dist folder that was created after the build
