@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Siri's NewTab",
+  "version": "1.0",
+  "description": "A momentum replacement for a ~28kb JS experience instead of the 1.7MB of momentum.",
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["icon.png"]
+    }
+  ],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_title": "Siri's NewTab"
+  },
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

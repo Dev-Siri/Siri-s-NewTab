@@ -1,0 +1,156 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { localKeys } from "../constants/localKeys";
+  import ExtraWeatherInfo from "./ExtraWeatherInfo.svelte";
+
+  import type { WeatherData } from "../types";
+
+  import { getWeatherData } from "../api/weather";
+  import { saveToCache } from "../utils/cache";
+
+  let city = localStorage.getItem(localKeys.city) ?? "";
+  let name = localStorage.getItem(localKeys.name) ?? "";
+  let icon = localStorage.getItem(localKeys.icon) ?? "";
+
+  const storedTemperature = localStorage.getItem(localKeys.temperature) ?? 0;
+  const storedFeelsLikeTemperature =
+    localStorage.getItem(localKeys.feelsLikeTemperature) ?? 0;
+  const storedWindDirection =
+    localStorage.getItem(localKeys.windDirection) ?? 0;
+  const storedHumidity = localStorage.getItem(localKeys.humidity) ?? "";
+  const storedWindSpeed = localStorage.getItem(localKeys.windSpeed) ?? 0;
+
+  let temperature = Number(storedTemperature);
+  let feelsLikeTemperature = Number(storedFeelsLikeTemperature);
+  let windDirection = Number(storedWindDirection);
+  let windSpeed = Number(storedWindSpeed);
+  let humidity = Number(storedHumidity);
+  let isExtraMenuOpen = false;
+
+  onMount(() => {
+    navigator.geolocation.getCurrentPosition(fetchWeather);
+
+    function refetchOnWindowRefocus() {
+      if (document.visibilityState === "visible")
+        navigator.geolocation.getCurrentPosition(fetchWeather);
+    }
+
+    const closeExtraMenu = () => (isExtraMenuOpen = false);
+
+    document.addEventListener("visibilitychange", refetchOnWindowRefocus);
+    document.addEventListener("click", closeExtraMenu);
+
+    return () => {
+      document.removeEventListener("visibilitychange", refetchOnWindowRefocus);
+      document.removeEventListener("click", closeExtraMenu);
+    };
+  });
+
+  function handleOpenMenu() {
+    isExtraMenuOpen = !isExtraMenuOpen;
+
+    if (isExtraMenuOpen) navigator.geolocation.getCurrentPosition(fetchWeather);
+  }
+
+  async function fetchWeather({
+    coords: { latitude, longitude },
+  }: GeolocationPosition) {
+    const data: WeatherData = await getWeatherData(latitude, longitude);
+
+    city = data.name;
+    temperature = Math.round(data.main.temp);
+    icon = data.weather[0].icon;
+    name = data.weather[0].main;
+    feelsLikeTemperature = data.main.feels_like;
+    windDirection = data.wind.deg;
+    windSpeed = data.wind.speed;
+    humidity = data.main.humidity;
+
+    saveToCache({
+      [localKeys.city]: city,
+      [localKeys.temperature]: temperature.toString(),
+      [localKeys.icon]: icon,
+      [localKeys.name]: name,
+      [localKeys.feelsLikeTemperature]: feelsLikeTemperature.toString(),
+      [localKeys.windDirection]: windDirection.toString(),
+      [localKeys.windSpeed]: windSpeed.toString(),
+      [localKeys.humidity]: humidity.toString(),
+    });
+  }
+</script>
+
+<div
+  class="m-4 duration-200"
+  role="menu"
+  tabindex={0}
+  on:keydown={(e) => e.stopPropagation()}
+  on:click={(e) => e.stopPropagation()}
+>
+  <button
+    type="button"
+    class="cursor-pointer flex flex-col items-end p-4 group"
+    on:click={handleOpenMenu}
+  >
+    <div class="flex gap-2">
+      <img
+        src="https://openweathermap.org/img/wn/{icon}@2x.png"
+        alt="Weather Icon"
+        height={32}
+        width={32}
+        class="bg-white mix-blend-difference bg-opacity-70 rounded-full h-8 w-8"
+      />
+      <p class="text-2xl duration-200 group-hover:opacity-90">{temperature}°</p>
+    </div>
+    <p class="text-xs mr-0.5 leading-tight duration-200 group-hover:opacity-90">
+      {city}
+    </p>
+  </button>
+  <div
+    class="absolute duration-200 right-8 {isExtraMenuOpen
+      ? 'block slide-down'
+      : 'hidden slide-up'}"
+  >
+    <ExtraWeatherInfo
+      {name}
+      {city}
+      {temperature}
+      {humidity}
+      {icon}
+      {feelsLikeTemperature}
+      {windSpeed}
+      {windDirection}
+    />
+  </div>
+</div>
+
+<style>
+  @keyframes slide-down {
+    0% {
+      opacity: 0;
+      translate: 0 -5px;
+    }
+    100% {
+      opacity: 1;
+      translate: 0 0px;
+    }
+  }
+
+  @keyframes slide-up {
+    0% {
+      opacity: 1;
+      translate: 0 0px;
+    }
+    100% {
+      opacity: 0;
+      translate: 0 -5px;
+    }
+  }
+
+  .slide-down {
+    animation: slide-down 0.1s ease-in;
+  }
+
+  .slide-up {
+    animation: slide-up 0.1s ease-out;
+  }
+</style>
