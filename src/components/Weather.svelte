@@ -6,7 +6,7 @@
   import type { WeatherData } from "../types";
 
   import { getWeatherData } from "../api/weather";
-  import { saveToCache } from "../utils/cache";
+  import { fetchAndCacheImage, saveToCache } from "../utils/cache";
 
   let city = localStorage.getItem(localKeys.city) ?? "";
   let name = localStorage.getItem(localKeys.name) ?? "";
@@ -26,6 +26,7 @@
   let windSpeed = Number(storedWindSpeed);
   let humidity = Number(storedHumidity);
   let isExtraMenuOpen = false;
+  let iconSrc = "";
 
   onMount(() => {
     navigator.geolocation.getCurrentPosition(fetchWeather);
@@ -77,8 +78,16 @@
       [localKeys.humidity]: humidity.toString(),
     });
   }
+
+  onMount(async () => {
+    const weatherImage = await fetchAndCacheImage(
+      `https://openweathermap.org/img/wn/${icon}@2x.png`
+    );
+    iconSrc = URL.createObjectURL(weatherImage);
+  });
 </script>
 
+<!-- Main holder of the weather info -->
 <div
   class="m-4 duration-200"
   role="menu"
@@ -93,7 +102,7 @@
   >
     <div class="flex gap-2">
       <img
-        src="https://openweathermap.org/img/wn/{icon}@2x.png"
+        src={iconSrc}
         alt="Weather Icon"
         height={32}
         width={32}

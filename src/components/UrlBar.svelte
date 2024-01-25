@@ -25,6 +25,7 @@
 <div class="flex ml-4 w-2/4">
   <button
     type="button"
+    aria-label="Toggle URL Bar"
     class="rounded-full p-2 bg-black bg-opacity-50"
     on:click={() => (isShown = !isShown)}
   >
@@ -38,7 +39,9 @@
   >
     <input
       type="text"
-      placeholder="Search the web with an URL or Google"
+      placeholder="Search the web with an URL or {$searchEngineStore
+        .charAt(0)
+        .toUpperCase()}{$searchEngineStore.slice(1)}"
       class="bg-transparent text-white placeholder:text-white outline-none h-fit w-full text-2xl"
       bind:value={urlOrST}
       on:focus={() => (isFocused = true)}

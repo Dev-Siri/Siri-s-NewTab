@@ -56,7 +56,11 @@
     class="p-3 pl-0 bg-transparent cursor-pointer outline-none w-full text-3xl"
     bind:value={searchTerm}
   />
-  <button type="button" on:click={changeSearchEngine}>
+  <button
+    type="button"
+    on:click={changeSearchEngine}
+    aria-label="Selected search engine"
+  >
     <div class="{$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'} w-6 mr-6">
       {#if $searchEngineStore === "google"}
         <IoLogoGoogle />

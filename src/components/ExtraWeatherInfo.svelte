@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { fetchAndCacheImage } from "../utils/cache";
+
   export let temperature: number;
   export let feelsLikeTemperature: number;
   export let windSpeed: number;
@@ -7,6 +10,15 @@
   export let city: string;
   export let icon: string;
   export let name: string;
+
+  let iconSrc = "";
+
+  onMount(async () => {
+    const weatherImage = await fetchAndCacheImage(
+      `https://openweathermap.org/img/wn/${icon}@2x.png`
+    );
+    iconSrc = URL.createObjectURL(weatherImage);
+  });
 </script>
 
 <div class="bg-black p-4 w-96 bg-opacity-80 rounded-md cursor-default">
@@ -16,7 +28,7 @@
   </div>
   <div class="flex items-center py-2">
     <img
-      src="https://openweathermap.org/img/wn/{icon}@2x.png"
+      src={iconSrc}
       alt="Weather Icon"
       height={80}
       width={80}
