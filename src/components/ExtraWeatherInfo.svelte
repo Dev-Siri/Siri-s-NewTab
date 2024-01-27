@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
+
   import { fetchAndCacheImage } from "../utils/cache";
+  import { metrePerSecToKmPerHr } from "../utils/conversions";
 
   export let temperature: number;
   export let feelsLikeTemperature: number;
@@ -55,10 +57,12 @@
         Wind
         <span
           style="rotate: {windDirection}deg;"
-          class="inline-block text-white ml-0.5">↑</span
+          class="inline-block text-white ml-0.5"
         >
+          ↑
+        </span>
         <span class="text-white">
-          {(windSpeed * (5 / 18)).toFixed(2)}km/hr
+          {metrePerSecToKmPerHr(windSpeed).toFixed(2)}km/hr
         </span>
       </p>
     </div>
