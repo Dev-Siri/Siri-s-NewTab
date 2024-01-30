@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import { localKeys } from "../constants/localKeys";
+  import weatherMetric from "../stores/weather-metric";
   import { fetchAndCacheImage } from "../utils/cache";
   import { metrePerSecToKmPerHr } from "../utils/conversions";
 
@@ -15,6 +17,13 @@
 
   let iconSrc = "";
 
+  function switchMetrics() {
+    const updatedMetric = $weatherMetric === "imperial" ? "metric" : "imperial";
+
+    weatherMetric.set(updatedMetric);
+    localStorage.setItem(localKeys.weatherMetric, updatedMetric);
+  }
+
   onMount(async () => {
     const weatherImage = await fetchAndCacheImage(
       `https://openweathermap.org/img/wn/${icon}@2x.png`
@@ -24,9 +33,21 @@
 </script>
 
 <div class="bg-black p-4 w-96 bg-opacity-80 rounded-md cursor-default">
-  <div>
-    <p class="text-lg leading-tight">{city}</p>
-    <p class="text-sm text-gray-400">{name}</p>
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-lg leading-tight">{city}</p>
+      <p class="text-sm text-gray-400">{name}</p>
+    </div>
+    <button
+      type="button"
+      title={$weatherMetric === "metric"
+        ? "Switch to Fahrenheit (°F)"
+        : "Switch to Celsius (°C)"}
+      on:click={switchMetrics}
+      class="text-gray-300 duration-200 hover:text-gray-400"
+    >
+      °{$weatherMetric === "metric" ? "C" : "F"}
+    </button>
   </div>
   <div class="flex items-center py-2">
     <img
@@ -62,7 +83,10 @@
           ↑
         </span>
         <span class="text-white">
-          {metrePerSecToKmPerHr(windSpeed).toFixed(2)}km/hr
+          {metrePerSecToKmPerHr(windSpeed).toFixed(2)}{$weatherMetric ===
+          "metric"
+            ? "km/hr"
+            : "mph"}
         </span>
       </p>
     </div>

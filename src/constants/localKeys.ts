@@ -10,4 +10,5 @@ export const localKeys = {
   humidity: "humidity",
   imageDateForDay: "image-date-for-day",
   searchEngine: "search-engine",
+  weatherMetric: "weather-metric",
 } as const;

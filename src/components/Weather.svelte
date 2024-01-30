@@ -6,6 +6,7 @@
   import type { WeatherData } from "../types";
 
   import { getWeatherData } from "../api/weather";
+  import weatherMetric from "../stores/weather-metric";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
 
   let city = localStorage.getItem(localKeys.city) ?? "";
@@ -29,8 +30,6 @@
   let iconSrc = "";
 
   onMount(() => {
-    navigator.geolocation.getCurrentPosition(fetchWeather);
-
     function refetchOnWindowRefocus() {
       if (document.visibilityState === "visible")
         navigator.geolocation.getCurrentPosition(fetchWeather);
@@ -53,10 +52,19 @@
     if (isExtraMenuOpen) navigator.geolocation.getCurrentPosition(fetchWeather);
   }
 
+  $: {
+    $weatherMetric;
+    navigator.geolocation.getCurrentPosition(fetchWeather);
+  }
+
   async function fetchWeather({
     coords: { latitude, longitude },
   }: GeolocationPosition) {
-    const data: WeatherData = await getWeatherData(latitude, longitude);
+    const data: WeatherData = await getWeatherData(
+      latitude,
+      longitude,
+      $weatherMetric
+    );
 
     city = data.name;
     temperature = Math.round(data.main.temp);
