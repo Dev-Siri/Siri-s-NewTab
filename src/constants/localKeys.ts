@@ -11,4 +11,6 @@ export const localKeys = {
   imageDateForDay: "image-date-for-day",
   searchEngine: "search-engine",
   weatherMetric: "weather-metric",
+  currentBgImage: "current-bg-image",
+  nextUpdate: "next-update",
 } as const;
