@@ -54,6 +54,7 @@
     type="text"
     placeholder="Search"
     class="p-3 pl-0 bg-transparent cursor-pointer outline-none w-full text-3xl"
+    id="search-bar"
     bind:value={searchTerm}
   />
   <button

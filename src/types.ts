@@ -299,3 +299,12 @@ export interface ImageData {
   public_domain: boolean;
   tags: Tag[];
 }
+
+export interface LocationData {
+  name: string;
+  local_names: Record<string, string>;
+  lat: number;
+  lon: number;
+  country: string;
+  state: string;
+}

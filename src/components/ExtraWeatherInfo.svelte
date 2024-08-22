@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import { getLocationData } from "../api/location";
   import { localKeys } from "../constants/localKeys";
+  import locationStore from "../stores/location";
   import weatherMetric from "../stores/weather-metric";
-  import { fetchAndCacheImage } from "../utils/cache";
+  import { fetchAndCacheImage, saveToCache } from "../utils/cache";
   import { metrePerSecToKmPerHr } from "../utils/conversions";
 
   export let temperature: number;
@@ -11,11 +13,13 @@
   export let windSpeed: number;
   export let humidity: number;
   export let windDirection: number;
-  export let city: string;
   export let icon: string;
   export let name: string;
 
   let iconSrc = "";
+  let isEditCityMode = false;
+
+  let newCity = $locationStore.city;
 
   function switchMetrics() {
     const updatedMetric = $weatherMetric === "imperial" ? "metric" : "imperial";
@@ -30,12 +34,58 @@
     );
     iconSrc = URL.createObjectURL(weatherImage);
   });
+
+  async function handleCityChange(
+    e: KeyboardEvent & { currentTarget: EventTarget & HTMLInputElement }
+  ) {
+    if (e.key !== "Enter") return;
+
+    const location = await getLocationData(newCity);
+
+    locationStore.set(location);
+    saveToCache({
+      [localKeys.latitude]: location.latitude.toString(),
+      [localKeys.longitude]: location.longitude.toString(),
+      [localKeys.city]: location.city,
+    });
+
+    isEditCityMode = false;
+  }
+
+  function handleCityEditButtonClick() {
+    isEditCityMode = !isEditCityMode;
+  }
 </script>
 
 <div class="bg-black p-4 w-96 bg-opacity-80 rounded-md cursor-default">
   <div class="flex items-center justify-between">
     <div>
-      <p class="text-lg leading-tight">{city}</p>
+      {#if isEditCityMode}
+        <!-- svelte-ignore a11y-autofocus -->
+        <input
+          type="text"
+          name="edit-city"
+          id="edit-city"
+          autofocus
+          bind:value={newCity}
+          on:keydown={handleCityChange}
+          class="bg-transparent outline-none text-lg"
+        />
+        <div class="h-0.5 w-[10%] bg-white scale-in" />
+      {:else}
+        <button
+          type="button"
+          on:click={handleCityEditButtonClick}
+          class="duration-200 hover:underline cursor-pointer"
+        >
+          <p class="text-lg leading-tight">
+            {$locationStore.city}
+          </p>
+        </button>
+        <p class="text-lg leading-tight inline -ml-0.5">
+          , {$locationStore.country}
+        </p>
+      {/if}
       <p class="text-sm text-gray-400">{name}</p>
     </div>
     <button
@@ -92,3 +142,18 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes scale-in {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 10%;
+    }
+  }
+
+  .scale-in {
+    animation: scale-in 200ms ease-in;
+  }
+</style>

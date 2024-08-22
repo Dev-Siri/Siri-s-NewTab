@@ -13,4 +13,7 @@ export const localKeys = {
   weatherMetric: "weather-metric",
   currentBgImage: "current-bg-image",
   nextUpdate: "next-update",
+  latitude: "latitude",
+  longitude: "longitude",
+  country: "country",
 } as const;

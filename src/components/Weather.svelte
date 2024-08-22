@@ -6,10 +6,10 @@
   import type { WeatherData } from "../types";
 
   import { getWeatherData } from "../api/weather";
+  import locationStore from "../stores/location";
   import weatherMetric from "../stores/weather-metric";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
 
-  let city = localStorage.getItem(localKeys.city) ?? "";
   let name = localStorage.getItem(localKeys.name) ?? "";
   let icon = localStorage.getItem(localKeys.icon) ?? "";
 
@@ -31,8 +31,7 @@
 
   onMount(() => {
     function refetchOnWindowRefocus() {
-      if (document.visibilityState === "visible")
-        navigator.geolocation.getCurrentPosition(fetchWeather);
+      if (document.visibilityState === "visible") fetchWeather();
     }
 
     const closeExtraMenu = () => (isExtraMenuOpen = false);
@@ -49,24 +48,24 @@
   function handleOpenMenu() {
     isExtraMenuOpen = !isExtraMenuOpen;
 
-    if (isExtraMenuOpen) navigator.geolocation.getCurrentPosition(fetchWeather);
+    if (isExtraMenuOpen) fetchWeather();
   }
 
   $: {
     $weatherMetric;
-    navigator.geolocation.getCurrentPosition(fetchWeather);
+    $locationStore;
+    fetchWeather();
   }
 
-  async function fetchWeather({
-    coords: { latitude, longitude },
-  }: GeolocationPosition) {
+  async function fetchWeather() {
+    const { latitude, longitude } = $locationStore;
+
     const data: WeatherData = await getWeatherData(
       latitude,
       longitude,
       $weatherMetric
     );
 
-    city = data.name;
     temperature = Math.round(data.main.temp);
     icon = data.weather[0].icon;
     name = data.weather[0].main;
@@ -76,7 +75,6 @@
     humidity = data.main.humidity;
 
     saveToCache({
-      [localKeys.city]: city,
       [localKeys.temperature]: temperature.toString(),
       [localKeys.icon]: icon,
       [localKeys.name]: name,
@@ -119,7 +117,7 @@
       <p class="text-2xl duration-200 group-hover:opacity-90">{temperature}°</p>
     </div>
     <p class="text-xs mr-0.5 leading-tight duration-200 group-hover:opacity-90">
-      {city}
+      {$locationStore.city}
     </p>
   </button>
   <div
@@ -129,7 +127,6 @@
   >
     <ExtraWeatherInfo
       {name}
-      {city}
       {temperature}
       {humidity}
       {icon}
@@ -155,11 +152,11 @@
   @keyframes slide-up {
     0% {
       opacity: 1;
-      translate: 0 0px;
+      translate: 0 -5px;
     }
     100% {
       opacity: 0;
-      translate: 0 -5px;
+      translate: 0 0px;
     }
   }
 

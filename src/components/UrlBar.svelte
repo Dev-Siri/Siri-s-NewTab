@@ -34,7 +34,9 @@
     </div>
   </button>
   <form
-    class="w-full ml-4 duration-200 {isShown ? 'opacity-100' : 'opacity-0'}"
+    class="w-full ml-4 duration-200 {isShown
+      ? 'block slide-from-left'
+      : 'hidden'}"
     on:submit={navigateToSite}
   >
     <input
@@ -42,7 +44,8 @@
       placeholder="Search the web with an URL or {$searchEngineStore
         .charAt(0)
         .toUpperCase()}{$searchEngineStore.slice(1)}"
-      class="bg-transparent text-white placeholder:text-white outline-none h-fit w-full text-2xl"
+      class="bg-transparent text-white placeholder:text-white outline-none h-fit w-full text-xl"
+      id="url-bar"
       bind:value={urlOrST}
       on:focus={() => (isFocused = true)}
       on:blur={() => (isFocused = false)}
@@ -54,3 +57,22 @@
     />
   </form>
 </div>
+
+<style>
+  @keyframes slide-from-left {
+    0% {
+      opacity: 0;
+      translate: -60px;
+      z-index: -10;
+    }
+    100% {
+      opacity: 1;
+      translate: 0px;
+      z-index: 0;
+    }
+  }
+
+  .slide-from-left {
+    animation: slide-from-left 300ms ease-in;
+  }
+</style>
