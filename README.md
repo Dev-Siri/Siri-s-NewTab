@@ -36,7 +36,7 @@ $ bun run build
 
 ```s
 VITE_OWA_API_KEY=""
-VITE_UNSPLASH_ACCESS_KEY=-GveK8oTeffBz2WCpANQZr2agQ2TzXmWZofgND4MczY
+VITE_UNSPLASH_ACCESS_KEY=""
 ```
 
 - Then go to `chrome://extensions` in the browser
