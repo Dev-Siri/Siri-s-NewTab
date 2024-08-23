@@ -7,20 +7,25 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["icon.png"]
+      "resources": [
+        "icons/32.png",
+        "icons/64.png",
+        "icons/16.png",
+        "icons/128.png"
+      ]
     }
   ],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": "icons/32.png",
     "default_title": "Siri's NewTab"
   },
   "icons": {
-    "16": "icon.png",
-    "32": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
   }
 }
