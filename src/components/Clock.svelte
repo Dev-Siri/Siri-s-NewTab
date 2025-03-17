@@ -14,7 +14,7 @@
 </script>
 
 <div class="flex flex-col items-center cursor-default">
-  <h1 class="text-[150px] leading-none">
+  <h1 class="text-[150px] leading-none font-bold font-sans">
     {hours.toString().padStart(2, "0")}:{minutes.toString().padStart(2, "0")}
   </h1>
   <Greeting {hours} />

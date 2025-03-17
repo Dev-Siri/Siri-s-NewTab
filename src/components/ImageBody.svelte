@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy, type Snippet } from "svelte";
   import { fade } from "svelte/transition";
 
   import { getRandomBackgroundImage } from "../api/background-image";
@@ -10,7 +10,9 @@
   import { getNextMidnight } from "../utils/date";
   import { resizeRawImage } from "../utils/image";
 
-  let [height, width] = [window.innerHeight, window.innerWidth];
+  const { children }: { children: Snippet } = $props();
+
+  let [height, width] = $state([window.innerHeight, window.innerWidth]);
 
   const changeImageDimensions = () =>
     ([height, width] = [window.innerHeight, window.innerWidth]);
@@ -30,25 +32,29 @@
     });
   }
 
-  onMount(async () => {
-    const imageDateForDay = localStorage.getItem(localKeys.imageDateForDay);
-    const nextUpdate = new Date(
-      localStorage.getItem(localKeys.nextUpdate) || 0
-    );
-
-    if (!imageDateForDay || new Date() >= nextUpdate) {
-      await updateBackgroundImage();
-    } else {
-      const cachedImage = localStorage.getItem(localKeys.currentBgImage);
-      if (cachedImage) {
-        const image = JSON.parse(cachedImage) as ImageData;
-        backgroundImageStore.set(image);
-        const resizedImageURL = resizeRawImage(image.urls.raw);
-        bgImageSet.set(await fetchAndCacheImage(resizedImageURL));
+  $effect(() => {
+    async function updateImage() {
+      const imageDateForDay = localStorage.getItem(localKeys.imageDateForDay);
+      const nextUpdate = new Date(
+        localStorage.getItem(localKeys.nextUpdate) || 0
+      );
+  
+      if (!imageDateForDay || new Date() >= nextUpdate) {
+        await updateBackgroundImage();
+      } else {
+        const cachedImage = localStorage.getItem(localKeys.currentBgImage);
+        if (cachedImage) {
+          const image = JSON.parse(cachedImage) as ImageData;
+          backgroundImageStore.set(image);
+          const resizedImageURL = resizeRawImage(image.urls.raw);
+          bgImageSet.set(await fetchAndCacheImage(resizedImageURL));
+        }
       }
+  
+      window.addEventListener("resize", changeImageDimensions);
     }
 
-    window.addEventListener("resize", changeImageDimensions);
+    updateImage();
   });
 
   onDestroy(() => window.removeEventListener("resize", changeImageDimensions));
@@ -65,5 +71,5 @@
       transition:fade
     />
   {/key}
-  <slot />
+  {@render children?.()}
 </main>

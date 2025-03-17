@@ -1,7 +1,5 @@
 <script lang="ts">
   // @ts-expect-error
-  import MdSearch from "svelte-icons/md/MdSearch.svelte";
-  // @ts-expect-error
   import IoLogoGoogle from "svelte-icons/io/IoLogoGoogle.svelte";
   // @ts-expect-error
   import FaYandex from "svelte-icons/fa/FaYandex.svelte";
@@ -17,7 +15,7 @@
   import { saveToCache } from "../utils/cache";
   import { getSearchEngineQueryUrl } from "../utils/url";
 
-  let searchTerm = "";
+  let searchTerm = $state("");
 
   function search(
     e: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }
@@ -45,10 +43,35 @@
 
 <form
   class="flex items-center cursor-pointer justify-center w-[45%] bg-opacity-55 bg-blur-2xl bg-gray-900 rounded-full"
-  on:submit={search}
+  onsubmit={search}
 >
-  <div class="mt-1 h-10 w-10 mx-4">
-    <MdSearch />
+  <div class="flex items-center ml-6">
+    <button
+      type="button"
+      onclick={changeSearchEngine}
+      aria-label="Selected search engine"
+    >
+      <div class="{$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'} w-6 mr-6">
+        {#if $searchEngineStore === "google"}
+          <IoLogoGoogle />
+        {:else if $searchEngineStore === "duckduckgo"}
+          <div class="bg-white rounded-full">
+            <img
+              src="/images/ddg.webp"
+              alt="DuckDuckGo Logo"
+              height={24}
+              width={24}
+            />
+          </div>
+        {:else if $searchEngineStore === "bing"}
+          <DiBingSmall />
+        {:else if $searchEngineStore === "yandex"}
+          <FaYandex />
+        {:else if $searchEngineStore === "ecosia"}
+          <FaTree />
+        {/if}
+      </div>
+    </button>
   </div>
   <input
     type="text"
@@ -57,30 +80,4 @@
     id="search-bar"
     bind:value={searchTerm}
   />
-  <button
-    type="button"
-    on:click={changeSearchEngine}
-    aria-label="Selected search engine"
-  >
-    <div class="{$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'} w-6 mr-6">
-      {#if $searchEngineStore === "google"}
-        <IoLogoGoogle />
-      {:else if $searchEngineStore === "duckduckgo"}
-        <div class="bg-white rounded-full">
-          <img
-            src="/images/ddg.webp"
-            alt="DuckDuckGo Logo"
-            height={24}
-            width={24}
-          />
-        </div>
-      {:else if $searchEngineStore === "bing"}
-        <DiBingSmall />
-      {:else if $searchEngineStore === "yandex"}
-        <FaYandex />
-      {:else if $searchEngineStore === "ecosia"}
-        <FaTree />
-      {/if}
-    </div>
-  </button>
 </form>

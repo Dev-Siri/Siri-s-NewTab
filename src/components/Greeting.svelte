@@ -1,7 +1,7 @@
 <script lang="ts">
   import userStore from "../stores/user";
 
-  export let hours: number;
+  export const { hours }: { hours: number } = $props();
 
   function getGreeting(hours: number) {
     if (hours >= 5 && hours < 12) {

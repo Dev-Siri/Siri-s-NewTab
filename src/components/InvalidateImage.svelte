@@ -49,7 +49,7 @@
   </p>
   <button
     type="button"
-    on:click={changeImage}
+    onclick={changeImage}
     aria-label="Change Image"
     title="Change Image"
     class="text-4xl hover:opacity-70 duration-200 select-none"

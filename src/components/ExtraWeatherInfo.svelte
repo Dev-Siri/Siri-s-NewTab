@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-
   import { getLocationData } from "../api/location";
   import { localKeys } from "../constants/localKeys";
   import locationStore from "../stores/location";
@@ -8,18 +6,28 @@
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
   import { metrePerSecToKmPerHr } from "../utils/conversions";
 
-  export let temperature: number;
-  export let feelsLikeTemperature: number;
-  export let windSpeed: number;
-  export let humidity: number;
-  export let windDirection: number;
-  export let icon: string;
-  export let name: string;
+  const {
+    temperature,
+    feelsLikeTemperature,
+    windSpeed,
+    humidity,
+    windDirection,
+    icon,
+    name
+  }: {
+    temperature: number;
+    feelsLikeTemperature: number;
+    windSpeed: number;
+    humidity: number;
+    windDirection: number;
+    icon: string;
+    name: string;
+  } = $props();
 
-  let iconSrc = "";
-  let isEditCityMode = false;
+  let iconSrc = $state("");
+  let isEditCityMode = $state(false);
 
-  let newCity = $locationStore.city;
+  let newCity = $state($locationStore.city);
 
   function switchMetrics() {
     const updatedMetric = $weatherMetric === "imperial" ? "metric" : "imperial";
@@ -28,11 +36,15 @@
     localStorage.setItem(localKeys.weatherMetric, updatedMetric);
   }
 
-  onMount(async () => {
-    const weatherImage = await fetchAndCacheImage(
-      `https://openweathermap.org/img/wn/${icon}@2x.png`
-    );
-    iconSrc = URL.createObjectURL(weatherImage);
+  $effect(() => {
+    async function getCachedImage() {
+      const weatherImage = await fetchAndCacheImage(
+        `https://openweathermap.org/img/wn/${icon}@2x.png`
+      );
+      iconSrc = URL.createObjectURL(weatherImage);
+    }
+
+    getCachedImage();
   });
 
   async function handleCityChange(
@@ -61,21 +73,21 @@
   <div class="flex items-center justify-between">
     <div>
       {#if isEditCityMode}
-        <!-- svelte-ignore a11y-autofocus -->
+        <!-- svelte-ignore a11y_autofocus -->
         <input
           type="text"
           name="edit-city"
           id="edit-city"
           autofocus
           bind:value={newCity}
-          on:keydown={handleCityChange}
+          onkeydown={handleCityChange}
           class="bg-transparent outline-none text-lg"
         />
-        <div class="h-0.5 w-[10%] bg-white scale-in" />
+        <div class="h-0.5 w-[10%] bg-white scale-in"></div>
       {:else}
         <button
           type="button"
-          on:click={handleCityEditButtonClick}
+          onclick={handleCityEditButtonClick}
           class="duration-200 hover:underline cursor-pointer"
         >
           <p class="text-lg leading-tight">
@@ -93,7 +105,7 @@
       title={$weatherMetric === "metric"
         ? "Switch to Fahrenheit (°F)"
         : "Switch to Celsius (°C)"}
-      on:click={switchMetrics}
+      onclick={switchMetrics}
       class="text-gray-300 duration-200 hover:text-gray-400"
     >
       °{$weatherMetric === "metric" ? "C" : "F"}

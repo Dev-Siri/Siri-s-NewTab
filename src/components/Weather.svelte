@@ -10,8 +10,8 @@
   import weatherMetric from "../stores/weather-metric";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
 
-  let name = localStorage.getItem(localKeys.name) ?? "";
-  let icon = localStorage.getItem(localKeys.icon) ?? "";
+  let name = $state(localStorage.getItem(localKeys.name) ?? "");
+  let icon = $state(localStorage.getItem(localKeys.icon) ?? "");
 
   const storedTemperature = localStorage.getItem(localKeys.temperature) ?? 0;
   const storedFeelsLikeTemperature =
@@ -21,13 +21,13 @@
   const storedHumidity = localStorage.getItem(localKeys.humidity) ?? "";
   const storedWindSpeed = localStorage.getItem(localKeys.windSpeed) ?? 0;
 
-  let temperature = Number(storedTemperature);
-  let feelsLikeTemperature = Number(storedFeelsLikeTemperature);
-  let windDirection = Number(storedWindDirection);
-  let windSpeed = Number(storedWindSpeed);
-  let humidity = Number(storedHumidity);
-  let isExtraMenuOpen = false;
-  let iconSrc = "";
+  let temperature = $state(Number(storedTemperature));
+  let feelsLikeTemperature = $state(Number(storedFeelsLikeTemperature));
+  let windDirection = $state(Number(storedWindDirection));
+  let windSpeed = $state(Number(storedWindSpeed));
+  let humidity = $state(Number(storedHumidity));
+  let isExtraMenuOpen = $state(false);
+  let iconSrc = $state("");
 
   onMount(() => {
     function refetchOnWindowRefocus() {
@@ -51,11 +51,11 @@
     if (isExtraMenuOpen) fetchWeather();
   }
 
-  $: {
+  $effect(() => {
     $weatherMetric;
     $locationStore;
     fetchWeather();
-  }
+  })
 
   async function fetchWeather() {
     const { latitude, longitude } = $locationStore;
@@ -85,11 +85,15 @@
     });
   }
 
-  onMount(async () => {
-    const weatherImage = await fetchAndCacheImage(
-      `https://openweathermap.org/img/wn/${icon}@2x.png`
-    );
-    iconSrc = URL.createObjectURL(weatherImage);
+  $effect(() => {
+    async function getInitialData() {
+      const weatherImage = await fetchAndCacheImage(
+        `https://openweathermap.org/img/wn/${icon}@2x.png`
+      );
+      iconSrc = URL.createObjectURL(weatherImage);
+    }
+
+    getInitialData();
   });
 </script>
 
@@ -98,13 +102,13 @@
   class="m-4 duration-200"
   role="menu"
   tabindex={0}
-  on:keydown={(e) => e.stopPropagation()}
-  on:click={(e) => e.stopPropagation()}
+  onkeydown={(e) => e.stopPropagation()}
+  onclick={(e) => e.stopPropagation()}
 >
   <button
     type="button"
     class="cursor-pointer flex flex-col items-end p-4 group"
-    on:click={handleOpenMenu}
+    onclick={handleOpenMenu}
   >
     <div class="flex gap-2">
       <img
