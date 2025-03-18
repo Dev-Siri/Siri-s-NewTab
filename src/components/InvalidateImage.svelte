@@ -1,6 +1,5 @@
 <script lang="ts">
-  // @ts-expect-error
-  import FaArrowRight from "svelte-icons/fa/FaArrowRight.svelte";
+  import { Disc } from "lucide-svelte";
 
   import { getRandomBackgroundImage } from "../api/background-image";
   import { localKeys } from "../constants/localKeys";
@@ -52,10 +51,8 @@
     onclick={changeImage}
     aria-label="Change Image"
     title="Change Image"
-    class="text-4xl hover:opacity-70 duration-200 select-none"
+    class="text-4xl cursor-pointer hover:opacity-70 duration-200 select-none"
   >
-    <div class="h-5 w-5">
-      <FaArrowRight />
-    </div>
+    <Disc size={20} />
   </button>
 </div>

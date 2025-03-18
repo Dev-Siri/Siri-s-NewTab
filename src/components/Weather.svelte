@@ -120,7 +120,7 @@
       />
       <p class="text-2xl duration-200 group-hover:opacity-90">{temperature}°</p>
     </div>
-    <p class="text-xs mr-0.5 leading-tight duration-200 group-hover:opacity-90">
+    <p class="text-md mt-0.5 mr-0.5 leading-tight duration-200 group-hover:opacity-90">
       {$locationStore.city}
     </p>
   </button>

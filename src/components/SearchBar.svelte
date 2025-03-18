@@ -1,12 +1,5 @@
 <script lang="ts">
-  // @ts-expect-error
-  import IoLogoGoogle from "svelte-icons/io/IoLogoGoogle.svelte";
-  // @ts-expect-error
-  import FaYandex from "svelte-icons/fa/FaYandex.svelte";
-  // @ts-expect-error
-  import DiBingSmall from "svelte-icons/di/DiBingSmall.svelte";
-  // @ts-expect-error
-  import FaTree from "svelte-icons/fa/FaTree.svelte";
+  import { TreePine } from "lucide-svelte";
 
   import { localKeys } from "../constants/localKeys";
   import searchEngineStore, {
@@ -14,6 +7,10 @@
   } from "../stores/search-engine";
   import { saveToCache } from "../utils/cache";
   import { getSearchEngineQueryUrl } from "../utils/url";
+
+  import BingLogo from "./vectors/BingLogo.svelte";
+  import GoogleLogo from "./vectors/GoogleLogo.svelte";
+  import YandexLogo from "./vectors/YandexLogo.svelte";
 
   let searchTerm = $state("");
 
@@ -50,27 +47,26 @@
       type="button"
       onclick={changeSearchEngine}
       aria-label="Selected search engine"
+      class="cursor-pointer w-6 mr-6 {$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'}"
     >
-      <div class="{$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'} w-6 mr-6">
-        {#if $searchEngineStore === "google"}
-          <IoLogoGoogle />
-        {:else if $searchEngineStore === "duckduckgo"}
-          <div class="bg-white rounded-full">
-            <img
-              src="/images/ddg.webp"
-              alt="DuckDuckGo Logo"
-              height={24}
-              width={24}
-            />
-          </div>
-        {:else if $searchEngineStore === "bing"}
-          <DiBingSmall />
-        {:else if $searchEngineStore === "yandex"}
-          <FaYandex />
-        {:else if $searchEngineStore === "ecosia"}
-          <FaTree />
-        {/if}
-      </div>
+      {#if $searchEngineStore === "google"}
+        <GoogleLogo />
+      {:else if $searchEngineStore === "duckduckgo"}
+        <div class="bg-white rounded-full">
+          <img
+            src="/images/ddg.webp"
+            alt="DuckDuckGo Logo"
+            height={24}
+            width={24}
+          />
+        </div>
+      {:else if $searchEngineStore === "bing"}
+        <BingLogo />
+      {:else if $searchEngineStore === "yandex"}
+        <YandexLogo />
+      {:else if $searchEngineStore === "ecosia"}
+        <TreePine fill="white" />
+      {/if}
     </button>
   </div>
   <input
