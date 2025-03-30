@@ -1,6 +1,8 @@
 # Dev-Siri-s-NewTab
 
-A momentum replacement for a ~28kb JS experience instead of the 1.7MB of momentum.
+Momentum replacement for a <50kb JS experience instead of the 1.7MB of momentum.
+
+Designed intentionally to have less features
 
 ![Extension NewTab Image](images/extension-ss-img.png)
 
