@@ -3,7 +3,7 @@
 
   import { getRandomBackgroundImage } from "../api/background-image";
   import { localKeys } from "../constants/localKeys";
-  import backgroundImageStore, { bgImageSet } from "../stores/background-image";
+  import backgroundImageStore from "../stores/background-image.svelte";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
   import { getNextMidnight } from "../utils/date";
   import { resizeRawImage } from "../utils/image";
@@ -13,9 +13,8 @@
     const resizedImageURL = resizeRawImage(image.urls.raw);
     const imageCached = await fetchAndCacheImage(resizedImageURL);
 
-    bgImageSet.set(imageCached);
-
-    backgroundImageStore.set(image);
+    backgroundImageStore.bgImageSet = imageCached;
+    backgroundImageStore.backgroundImage = image;
 
     saveToCache({
       [localKeys.currentBgImage]: JSON.stringify(image),
@@ -29,12 +28,12 @@
   <p>
     Photo by
     <a
-      href={`https://unsplash.com/@${$backgroundImageStore?.user.username}`}
+      href={`https://unsplash.com/@${backgroundImageStore.backgroundImage?.user.username}`}
       target="_blank"
       rel="noopener noreferrer"
       class="hover:opacity-70 duration-200 underline"
     >
-      {$backgroundImageStore?.user.name}
+      {backgroundImageStore.backgroundImage?.user.name}
     </a>
     on
     <a

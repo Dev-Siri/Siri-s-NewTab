@@ -1,5 +1,3 @@
-import { writable } from "svelte/store";
-
 import { localKeys } from "../constants/localKeys";
 
 export const searchEngineChoices = [
@@ -22,8 +20,12 @@ function parseSearchEngineChoice(searchEngine: string): SearchEngineChoice {
   return "google";
 }
 
-const searchEngineStore = writable<SearchEngineChoice>(
-  parseSearchEngineChoice(storedSearchEngine)
-);
+class SearchEngineStore {
+  searchEngine = $state<SearchEngineChoice>(
+    parseSearchEngineChoice(storedSearchEngine)
+  );
+}
+
+const searchEngineStore = new SearchEngineStore();
 
 export default searchEngineStore;

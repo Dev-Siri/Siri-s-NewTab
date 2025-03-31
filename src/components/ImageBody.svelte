@@ -2,10 +2,11 @@
   import { onDestroy, type Snippet } from "svelte";
   import { fade } from "svelte/transition";
 
+  import type { ImageData } from "../types";
+
   import { getRandomBackgroundImage } from "../api/background-image";
   import { localKeys } from "../constants/localKeys";
-  import backgroundImageStore, { bgImageSet } from "../stores/background-image";
-  import type { ImageData } from "../types";
+  import backgroundImageStore from "../stores/background-image.svelte";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
   import { getNextMidnight } from "../utils/date";
   import { resizeRawImage } from "../utils/image";
@@ -22,8 +23,8 @@
     const resizedImageURL = resizeRawImage(image.urls.raw);
     const imageCached = await fetchAndCacheImage(resizedImageURL);
 
-    backgroundImageStore.set(image);
-    bgImageSet.set(imageCached);
+    backgroundImageStore.backgroundImage = image;
+    backgroundImageStore.bgImageSet = imageCached;
 
     saveToCache({
       [localKeys.currentBgImage]: JSON.stringify(image),
@@ -45,9 +46,9 @@
         const cachedImage = localStorage.getItem(localKeys.currentBgImage);
         if (cachedImage) {
           const image = JSON.parse(cachedImage) as ImageData;
-          backgroundImageStore.set(image);
+          backgroundImageStore.backgroundImage = image;
           const resizedImageURL = resizeRawImage(image.urls.raw);
-          bgImageSet.set(await fetchAndCacheImage(resizedImageURL));
+          backgroundImageStore.bgImageSet = await fetchAndCacheImage(resizedImageURL);
         }
       }
   
@@ -61,9 +62,9 @@
 </script>
 
 <main class="h-screen w-screen bg-cover text-white">
-  {#key $backgroundImageStore}
+  {#key backgroundImageStore.backgroundImage}
     <img
-      src={$bgImageSet ? URL.createObjectURL($bgImageSet) : ""}
+      src={backgroundImageStore.bgImageSet ? URL.createObjectURL(backgroundImageStore.bgImageSet) : ""}
       alt="Random"
       {height}
       {width}

@@ -9,9 +9,9 @@
   import { getLocationData } from "./api/location";
   import { getWeatherData } from "./api/weather";
   import { localKeys } from "./constants/localKeys";
-  import locationStore from "./stores/location";
-  import userStore from "./stores/user";
-  import weatherMetric from "./stores/weather-metric";
+  import locationStore from "./stores/location.svelte";
+  import userStore from "./stores/user.svelte";
+  import weatherMetricStore from "./stores/weather-metric.svelte";
   import { saveToCache } from "./utils/cache";
 
   $effect(() => {
@@ -21,19 +21,17 @@
     const storedCountry = localStorage.getItem(localKeys.country);
 
     if (storedLatitude && storedLongitude && storedCity && storedCountry) {
-      locationStore.set({
-        city: storedCity,
-        country: storedCountry,
-        latitude: Number(storedLatitude),
-        longitude: Number(storedLongitude),
-      });
+      locationStore.city = storedCity;
+      locationStore.country = storedCountry;
+      locationStore.latitude = Number(storedLatitude);
+      locationStore.longitude = Number(storedLongitude);
     } else {
       navigator.geolocation.getCurrentPosition(
         async ({ coords: { latitude, longitude } }) => {
           const { name: city } = await getWeatherData(
             latitude,
             longitude,
-            $weatherMetric
+            weatherMetricStore.weatherMetric
           );
 
           const { country } = await getLocationData(city);
@@ -45,7 +43,10 @@
             [localKeys.country]: country,
           });
 
-          locationStore.set({ latitude, longitude, city, country });
+          locationStore.latitude = latitude;
+          locationStore.longitude = longitude;
+          locationStore.city = city;
+          locationStore.country = country;
         }
       );
     }
@@ -53,7 +54,7 @@
 </script>
 
 <ImageBody>
-  {#if $userStore}
+  {#if userStore.user}
     <section class="flex items-center justify-end w-full">
       <Weather />
     </section>

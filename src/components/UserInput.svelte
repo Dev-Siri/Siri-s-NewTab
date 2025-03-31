@@ -1,5 +1,5 @@
 <script lang="ts">
-  import userStore from "../stores/user";
+  import userStore from "../stores/user.svelte";
 
   let username = $state("");
   let isFocused = $state(false);
@@ -10,7 +10,7 @@
     e.preventDefault();
 
     localStorage.setItem("user", username);
-    userStore.set(username);
+    userStore.user = username;
   }
 </script>
 

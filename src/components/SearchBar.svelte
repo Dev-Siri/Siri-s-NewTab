@@ -4,7 +4,7 @@
   import { localKeys } from "../constants/localKeys";
   import searchEngineStore, {
     searchEngineChoices,
-  } from "../stores/search-engine";
+  } from "../stores/search-engine.svelte";
   import { saveToCache } from "../utils/cache";
   import { getSearchEngineQueryUrl } from "../utils/url";
 
@@ -19,12 +19,12 @@
   ) {
     e.preventDefault();
 
-    location.assign(getSearchEngineQueryUrl($searchEngineStore, searchTerm));
+    location.assign(getSearchEngineQueryUrl(searchEngineStore.searchEngine, searchTerm));
   }
 
   function changeSearchEngine() {
     searchTerm = "";
-    const indexOfCurrent = searchEngineChoices.indexOf($searchEngineStore);
+    const indexOfCurrent = searchEngineChoices.indexOf(searchEngineStore.searchEngine);
     const nextChoice =
       searchEngineChoices[
         indexOfCurrent + 1 === searchEngineChoices.length
@@ -32,7 +32,7 @@
           : indexOfCurrent + 1
       ];
 
-    searchEngineStore.set(nextChoice);
+    searchEngineStore.searchEngine = nextChoice;
 
     saveToCache({ [localKeys.searchEngine]: nextChoice });
   }
@@ -47,11 +47,11 @@
       type="button"
       onclick={changeSearchEngine}
       aria-label="Selected search engine"
-      class="cursor-pointer w-6 mr-6 {$searchEngineStore === 'yandex' ? 'h-5' : 'h-6'}"
+      class="cursor-pointer w-6 mr-6 {searchEngineStore.searchEngine === 'yandex' ? 'h-5' : 'h-6'}"
     >
-      {#if $searchEngineStore === "google"}
+      {#if searchEngineStore.searchEngine === "google"}
         <GoogleLogo />
-      {:else if $searchEngineStore === "duckduckgo"}
+      {:else if searchEngineStore.searchEngine === "duckduckgo"}
         <div class="bg-white rounded-full">
           <img
             src="/images/ddg.webp"
@@ -60,11 +60,11 @@
             width={24}
           />
         </div>
-      {:else if $searchEngineStore === "bing"}
+      {:else if searchEngineStore.searchEngine === "bing"}
         <BingLogo />
-      {:else if $searchEngineStore === "yandex"}
+      {:else if searchEngineStore.searchEngine === "yandex"}
         <YandexLogo />
-      {:else if $searchEngineStore === "ecosia"}
+      {:else if searchEngineStore.searchEngine === "ecosia"}
         <TreePine fill="white" />
       {/if}
     </button>

@@ -1,5 +1,6 @@
-import type { LocationInfo } from "../stores/location";
+import type { LocationInfo } from "../stores/location.svelte";
 import type { LocationData } from "../types";
+
 import { countryCodeToName } from "../utils/location";
 
 export async function getLocationData(city: string): Promise<LocationInfo> {

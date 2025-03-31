@@ -1,4 +1,4 @@
-import type { SearchEngineChoice } from "../stores/search-engine";
+import type { SearchEngineChoice } from "../stores/search-engine.svelte";
 
 export function isValidUrl(url: string) {
   try {

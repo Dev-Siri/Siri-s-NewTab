@@ -1,4 +1,3 @@
-import { writable } from "svelte/store";
 import { localKeys } from "../constants/localKeys";
 
 export interface LocationInfo {
@@ -11,11 +10,13 @@ export interface LocationInfo {
 const storedLatitude = localStorage.getItem(localKeys.latitude);
 const storedLongitude = localStorage.getItem(localKeys.longitude);
 
-const locationStore = writable<LocationInfo>({
-  city: "",
-  country: "",
-  latitude: Number(storedLatitude),
-  longitude: Number(storedLongitude),
-});
+class LocationStore {
+  city = $state("");
+  country = $state("");
+  latitude = $state(Number(storedLatitude));
+  longitude = $state(Number(storedLongitude));
+}
+
+const locationStore = new LocationStore();
 
 export default locationStore;

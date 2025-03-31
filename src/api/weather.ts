@@ -1,4 +1,4 @@
-import type { Metric } from "../stores/weather-metric";
+import type { Metric } from "../stores/weather-metric.svelte";
 import type { WeatherData } from "../types";
 
 export async function getWeatherData(

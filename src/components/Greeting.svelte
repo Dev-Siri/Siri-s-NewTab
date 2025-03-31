@@ -1,5 +1,5 @@
 <script lang="ts">
-  import userStore from "../stores/user";
+  import userStore from "../stores/user.svelte";
 
   export const { hours }: { hours: number } = $props();
 
@@ -18,5 +18,5 @@
 
 <h2 class="text-5xl">
   {getGreeting(hours)},
-  {$userStore}
+  {userStore.user}
 </h2>

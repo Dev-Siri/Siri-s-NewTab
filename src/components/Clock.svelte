@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { onDestroy } from "svelte";
   import Greeting from "./Greeting.svelte";
 
-  let hours = new Date().getHours();
-  let minutes = new Date().getMinutes();
+  let hours = $state(new Date().getHours());
+  let minutes = $state(new Date().getMinutes());
 
   let interval = setInterval(() => {
     hours = new Date().getHours();
     minutes = new Date().getMinutes();
   }, 1000);
 
-  onDestroy(() => clearInterval(interval));
+  $effect(() => () => clearInterval(interval));
 </script>
 
 <div class="flex flex-col items-center cursor-default">

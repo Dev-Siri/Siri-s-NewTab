@@ -6,8 +6,8 @@
   import type { WeatherData } from "../types";
 
   import { getWeatherData } from "../api/weather";
-  import locationStore from "../stores/location";
-  import weatherMetric from "../stores/weather-metric";
+  import locationStore from "../stores/location.svelte";
+  import weatherMetricStore from "../stores/weather-metric.svelte";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
 
   let name = $state(localStorage.getItem(localKeys.name) ?? "");
@@ -52,18 +52,18 @@
   }
 
   $effect(() => {
-    $weatherMetric;
-    $locationStore;
+    weatherMetricStore.weatherMetric;
+    locationStore.longitude;
     fetchWeather();
   })
 
   async function fetchWeather() {
-    const { latitude, longitude } = $locationStore;
+    const { latitude, longitude } = locationStore;
 
     const data: WeatherData = await getWeatherData(
       latitude,
       longitude,
-      $weatherMetric
+      weatherMetricStore.weatherMetric
     );
 
     temperature = Math.round(data.main.temp);
@@ -121,7 +121,7 @@
       <p class="text-2xl duration-200 group-hover:opacity-90">{temperature}°</p>
     </div>
     <p class="text-md mt-0.5 mr-0.5 leading-tight duration-200 group-hover:opacity-90">
-      {$locationStore.city}
+      {locationStore.city}
     </p>
   </button>
   <div

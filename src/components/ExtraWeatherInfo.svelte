@@ -1,8 +1,8 @@
 <script lang="ts">
   import { getLocationData } from "../api/location";
   import { localKeys } from "../constants/localKeys";
-  import locationStore from "../stores/location";
-  import weatherMetric from "../stores/weather-metric";
+  import locationStore from "../stores/location.svelte";
+  import weatherMetricStore from "../stores/weather-metric.svelte";
   import { fetchAndCacheImage, saveToCache } from "../utils/cache";
   import { metrePerSecToKmPerHr } from "../utils/conversions";
 
@@ -27,12 +27,12 @@
   let iconSrc = $state("");
   let isEditCityMode = $state(false);
 
-  let newCity = $state($locationStore.city);
+  let newCity = $state(locationStore.city);
 
   function switchMetrics() {
-    const updatedMetric = $weatherMetric === "imperial" ? "metric" : "imperial";
+    const updatedMetric = weatherMetricStore.weatherMetric === "imperial" ? "metric" : "imperial";
 
-    weatherMetric.set(updatedMetric);
+    weatherMetricStore.weatherMetric = updatedMetric;
     localStorage.setItem(localKeys.weatherMetric, updatedMetric);
   }
 
@@ -54,7 +54,11 @@
 
     const location = await getLocationData(newCity);
 
-    locationStore.set(location);
+    locationStore.longitude = location.longitude;
+    locationStore.latitude = location.latitude;
+    locationStore.country = location.country;
+    locationStore.city = location.city;
+
     saveToCache({
       [localKeys.latitude]: location.latitude.toString(),
       [localKeys.longitude]: location.longitude.toString(),
@@ -91,24 +95,24 @@
           class="duration-200 hover:underline cursor-pointer"
         >
           <p class="text-lg leading-tight">
-            {$locationStore.city}
+            {locationStore.city}
           </p>
         </button>
         <p class="text-lg leading-tight inline -ml-0.5">
-          , {$locationStore.country}
+          , {locationStore.country}
         </p>
       {/if}
       <p class="text-sm text-gray-400">{name}</p>
     </div>
     <button
       type="button"
-      title={$weatherMetric === "metric"
+      title={weatherMetricStore.weatherMetric === "metric"
         ? "Switch to Fahrenheit (°F)"
         : "Switch to Celsius (°C)"}
       onclick={switchMetrics}
       class="text-gray-300 duration-200 hover:text-gray-400"
     >
-      °{$weatherMetric === "metric" ? "C" : "F"}
+      °{weatherMetricStore.weatherMetric === "metric" ? "C" : "F"}
     </button>
   </div>
   <div class="flex items-center py-2">
@@ -145,7 +149,7 @@
           ↑
         </span>
         <span class="text-white">
-          {metrePerSecToKmPerHr(windSpeed).toFixed(2)}{$weatherMetric ===
+          {metrePerSecToKmPerHr(windSpeed).toFixed(2)}{weatherMetricStore.weatherMetric ===
           "metric"
             ? "km/hr"
             : "mph"}
